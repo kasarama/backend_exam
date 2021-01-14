@@ -14,6 +14,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -219,6 +221,26 @@ public class LoginEndpointTest {
                 .statusCode(403)
                 .body("code", equalTo(403))
                 .body("message", equalTo("Not authenticated - do login"));
+    }
+    
+    @Test 
+    public void testDemoForAutorizedUser(){
+        login("user", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/user/demo").then()
+                .statusCode(200)
+                .body(containsString("carName"))
+                .body(containsString("carYear"))
+                .body(containsString("norrisJoke"))
+                .body(containsString("dadJoke"))
+                .body(containsString("employeeName"))
+                .body(containsString("employeeSalary"))
+                .body(containsString("comment"));
+   
+    
     }
 
 }

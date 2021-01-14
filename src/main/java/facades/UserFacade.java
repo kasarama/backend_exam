@@ -1,9 +1,13 @@
 package facades;
 
+import dto.demo.UserDTO;
 import entities.User;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import security.errorhandling.AuthenticationException;
+import utils.EMF_Creator;
 
 /**
  * @author lam@cphbusiness.dk
@@ -41,6 +45,26 @@ public class UserFacade {
             em.close();
         }
         return user;
+    }
+
+    public ArrayList<UserDTO> allUsers() {
+        EntityManager em = emf.createEntityManager();
+        ArrayList<UserDTO> all = new ArrayList();
+        try {
+            // Query query = em.createQuery("SELECT u from users u". User.class);
+            System.out.println("allUsers");
+            List<User> allUsers = em.createQuery("SELECT u from User u", User.class)
+                    .getResultList();
+            System.out.println("allUsers.size():");
+            System.out.println(allUsers.size());
+            for (User user : allUsers) {
+                all.add(new UserDTO(user));
+            }
+            return all;
+        } finally {
+            em.close();
+        }
+
     }
 
 }

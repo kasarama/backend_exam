@@ -1,0 +1,7 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Programing exam
+<#if licenseLast??>
+${licenseLast}
+</#if>
