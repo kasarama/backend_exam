@@ -54,6 +54,7 @@ public class FacadesTest {
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
             em.getTransaction().commit();
 
@@ -68,6 +69,8 @@ public class FacadesTest {
     public void setUp() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         EntityManager em = emf.createEntityManager();
+        userRole=em.find(Role.class, "user");
+        adminRole=em.find(Role.class, "admin");
         user.addRole(userRole);
         admin.addRole(adminRole);
         user_admin.addRole(userRole);
