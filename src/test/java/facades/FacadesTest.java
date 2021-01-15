@@ -21,11 +21,11 @@ public class FacadesTest {
     ;
     private static UserFacade user_facade = UserFacade.getUserFacade(emf);
 
-    private static User user = new User("user", "test");
-    private static User admin = new User("admin", "test");
-    private static User user_admin = new User("user_admin", "test");
-    private static Role userRole = new Role("user");
-    private static Role adminRole = new Role("admin");
+    private static User user = new User("userF", "test");
+    private static User admin = new User("adminF", "test");
+    private static User user_admin = new User("user_adminF", "test");
+    private static Role userRole = new Role("userF");
+    private static Role adminRole = new Role("adminF");
 
     public FacadesTest() {
     }
