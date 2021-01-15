@@ -56,7 +56,6 @@ public class FacadesTest {
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE from User").executeUpdate();
-            em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
             em.getTransaction().commit();
 
@@ -82,6 +81,8 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
+                        em.createQuery("DELETE from User").executeUpdate();
+
             em.persist(user);
             em.persist(admin);
             em.persist(user_admin);
@@ -111,6 +112,6 @@ public class FacadesTest {
     public void allUsersTest() {
         System.out.println("Test UserFacade.allUsers");
         int size = user_facade.allUsers().size();
-        assertEquals(size, 3);
+        assertEquals(3, size);
     }
 }
