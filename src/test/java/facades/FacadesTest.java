@@ -4,12 +4,17 @@ import dto.demo.UserDTO;
 import utils.EMF_Creator;
 import entities.Role;
 import entities.User;
+import errorhandling.API_Exception;
+import errorhandling.NotFoundException;
 import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -20,35 +25,19 @@ import org.junit.jupiter.api.Test;
 public class FacadesTest {
 
     private static EntityManagerFactory emf = EMF_Creator.createEntityManagerFactoryForTest();
-    ;
-    private static UserFacade user_facade = UserFacade.getUserFacade(emf);
 
-    private static User user = new User("userF", "test");
-    private static User admin = new User("adminF", "test");
-    private static User user_admin = new User("user_adminF", "test");
-    private static Role userRole = new Role("user");
-    private static Role adminRole = new Role("admin");
+    private static UserFacade user_facade;
 
     public FacadesTest() {
     }
 
-//    @Disabled
-//    @BeforeAll
-//    public static void setUpClass() {
-//        emf = EMF_Creator.createEntityManagerFactoryForTest();
-//        EntityManager em = emf.createEntityManager();
-//
-//        try {
-//            em.getTransaction().begin();
-//            em.persist(userRole);
-//            em.persist(adminRole);
-//
-//            em.getTransaction().commit();
-//
-//        } finally {
-//            em.close();
-//        }
-//    }
+    @BeforeAll
+    public static void setUpClass() {
+
+        emf = EMF_Creator.createEntityManagerFactoryForTest();
+user_facade=UserFacade.getUserFacade(emf);
+    }
+
     @AfterAll
     public static void tearDownClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
@@ -65,33 +54,31 @@ public class FacadesTest {
         }
     }
 
-    // Setup the DataBase in a known state BEFORE EACH TEST
-    //TODO -- Make sure to change the code below to use YOUR OWN entity class
     @BeforeEach
     public void setUp() {
-        emf = EMF_Creator.createEntityManagerFactoryForTest();
         EntityManager em = emf.createEntityManager();
-//        userRole=em.find(Role.class, "user");
-//        adminRole=em.find(Role.class, "admin");
-        //   em.persist(userRole);
-        // em.persist(adminRole);
-        user.addRole(userRole);
-        admin.addRole(adminRole);
-        user_admin.addRole(userRole);
-        user_admin.addRole(adminRole);
-
         try {
             em.getTransaction().begin();
-            em.createQuery("DELETE from User").executeUpdate();
-            em.createQuery("DELETE from Role").executeUpdate();
+            //Delete existing users and roles to get a "fresh" database
+            em.createQuery("delete from User").executeUpdate();
+            em.createQuery("delete from Role").executeUpdate();
+
+            Role userRole = new Role("user");
+            Role adminRole = new Role("admin");
+            User user = new User("userF", "test");
+            user.addRole(userRole);
+            User admin = new User("adminF", "test");
+            admin.addRole(adminRole);
+            User both = new User("user_adminF", "test");
+            both.addRole(userRole);
+            both.addRole(adminRole);
             em.persist(userRole);
             em.persist(adminRole);
-
             em.persist(user);
             em.persist(admin);
-            em.persist(user_admin);
+            em.persist(both);
+            //System.out.println("Saved test data to database");
             em.getTransaction().commit();
-
         } finally {
             em.close();
         }
@@ -104,8 +91,8 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
-            em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
             em.getTransaction().commit();
 
         } finally {
@@ -113,6 +100,7 @@ public class FacadesTest {
         }
     }
 
+    //@Disabled
     @Test
     public void allUsersTest() {
         System.out.println("Test UserFacade.allUsers");
@@ -124,10 +112,47 @@ public class FacadesTest {
         assertEquals(3, size);
     }
 
-    /*
-    public User addNewUser(String username, String password){
-        
-        
+    public static UserDTO addNewUser(String username, String password) throws NotFoundException, API_Exception {
+        if (username.length() < 4) {
+            throw new NotFoundException("username to short");
+        }
+        if (password.length() < 4) {
+            throw new NotFoundException("password to short");
+        }
+        EntityManager em = emf.createEntityManager();
+
+        User user = new User(username, password);
+        try {
+            if (em.find(User.class, username) != null) {
+                throw new API_Exception("Username not available", 409);
+            } else {
+                em.getTransaction().begin();
+                user.addRole(em.find(Role.class, "user"));
+                em.persist(user);
+                em.getTransaction().commit();
+            }
+
+        } finally {
+            em.close();
+        }
+
+        return new UserDTO(user);
+
     }
-     */
+
+    @Test
+    public void addNewUser() throws NotFoundException, API_Exception {
+        System.out.println("Test addNewUser()");
+        Assertions.assertThrows(NotFoundException.class, () -> addNewUser("123", "1234"));
+        Assertions.assertThrows(NotFoundException.class, () -> addNewUser("1234", "123"));
+        UserDTO user = addNewUser("Magdalena", "Wawrzak");
+        addNewUser("Magdalensa", "Wawrzak");
+        addNewUser("Magdalenaa", "Wawrzak");
+        System.out.println(user.toString());
+        assertTrue("Magdalena".equals(user.getUsername()));
+        assertTrue(user.isIsAdmin() == false);
+        assertTrue(user.isIsUser() == true);
+    }
+
+
 }

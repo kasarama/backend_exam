@@ -31,6 +31,18 @@ public class UserDTO {
         }
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean isIsUser() {
+        return isUser;
+    }
+
+    public boolean isIsAdmin() {
+        return isAdmin;
+    }
+
     @Override
     public String toString() {
         return "UserDTO{" + "username=" + username + ", isUser=" + isUser + ", isAdmin=" + isAdmin + '}';
