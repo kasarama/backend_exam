@@ -63,9 +63,6 @@ public class DemoFetch {
         };
 
         Future<String> futureChuck = threadPool.submit(chuckTask);
-        
-        
-        
 
         Callable<String> dadTask = new Callable<String>() {
             @Override
@@ -153,8 +150,9 @@ public class DemoFetch {
             ex.printStackTrace();
 
         }
-
-        return new DemoDTO(car.getName(), car.getYear(), chuck, dad, employee.getName(), employee.getSalary(), comment);
+        DemoDTO demoDTO = new DemoDTO(car.getName(), car.getYear(), chuck, dad, employee.getName(), employee.getSalary(), comment);
+        System.out.println(demoDTO.toString());
+        return demoDTO;
     }
 
 }

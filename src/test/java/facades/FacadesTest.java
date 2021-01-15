@@ -53,7 +53,7 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
-         //   em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
             em.getTransaction().commit();
 
