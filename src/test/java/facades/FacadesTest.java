@@ -1,8 +1,10 @@
 package facades;
 
+import dto.demo.UserDTO;
 import utils.EMF_Creator;
 import entities.Role;
 import entities.User;
+import java.util.ArrayList;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -111,7 +113,11 @@ public class FacadesTest {
     @Test
     public void allUsersTest() {
         System.out.println("Test UserFacade.allUsers");
-        int size = user_facade.allUsers().size();
+        ArrayList<UserDTO> users=user_facade.allUsers();
+        int size = users.size();
+        for (UserDTO user1 : users) {
+            System.out.println(user1.toString());
+        }
         assertEquals(3, size);
     }
 }
