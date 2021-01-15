@@ -55,8 +55,7 @@ public class UserFacade {
             System.out.println("allUsers");
             List<User> allUsers = em.createQuery("SELECT u from User u", User.class)
                     .getResultList();
-            System.out.println("allUsers.size():");
-            System.out.println(allUsers.size());
+        
             for (User user : allUsers) {
                 all.add(new UserDTO(user));
             }
