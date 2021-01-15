@@ -32,24 +32,23 @@ public class FacadesTest {
     public FacadesTest() {
     }
 
-    @Disabled
-    @BeforeAll
-    public static void setUpClass() {
-        emf = EMF_Creator.createEntityManagerFactoryForTest();
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            em.getTransaction().begin();
-            em.persist(userRole);
-            em.persist(adminRole);
-
-            em.getTransaction().commit();
-
-        } finally {
-            em.close();
-        }
-    }
-
+//    @Disabled
+//    @BeforeAll
+//    public static void setUpClass() {
+//        emf = EMF_Creator.createEntityManagerFactoryForTest();
+//        EntityManager em = emf.createEntityManager();
+//
+//        try {
+//            em.getTransaction().begin();
+//            em.persist(userRole);
+//            em.persist(adminRole);
+//
+//            em.getTransaction().commit();
+//
+//        } finally {
+//            em.close();
+//        }
+//    }
     @AfterAll
     public static void tearDownClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
@@ -74,8 +73,8 @@ public class FacadesTest {
         EntityManager em = emf.createEntityManager();
 //        userRole=em.find(Role.class, "user");
 //        adminRole=em.find(Role.class, "admin");
-     //   em.persist(userRole);
-       // em.persist(adminRole);
+        //   em.persist(userRole);
+        // em.persist(adminRole);
         user.addRole(userRole);
         admin.addRole(adminRole);
         user_admin.addRole(userRole);
@@ -83,7 +82,10 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
-                        em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from Role").executeUpdate();
+            em.persist(userRole);
+            em.persist(adminRole);
 
             em.persist(user);
             em.persist(admin);
@@ -103,6 +105,7 @@ public class FacadesTest {
         try {
             em.getTransaction().begin();
             em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from Role").executeUpdate();
             em.getTransaction().commit();
 
         } finally {
@@ -113,11 +116,18 @@ public class FacadesTest {
     @Test
     public void allUsersTest() {
         System.out.println("Test UserFacade.allUsers");
-        ArrayList<UserDTO> users=user_facade.allUsers();
+        ArrayList<UserDTO> users = user_facade.allUsers();
         int size = users.size();
         for (UserDTO user1 : users) {
             System.out.println(user1.toString());
         }
         assertEquals(3, size);
     }
+
+    /*
+    public User addNewUser(String username, String password){
+        
+        
+    }
+     */
 }
