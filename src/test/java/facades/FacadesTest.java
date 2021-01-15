@@ -17,7 +17,8 @@ import org.junit.jupiter.api.Test;
 //@Disabled
 public class FacadesTest {
 
-    private static EntityManagerFactory emf = EMF_Creator.createEntityManagerFactoryForTest();;
+    private static EntityManagerFactory emf = EMF_Creator.createEntityManagerFactoryForTest();
+    ;
     private static UserFacade user_facade = UserFacade.getUserFacade(emf);
 
     private static User user = new User("user", "test");
@@ -29,6 +30,7 @@ public class FacadesTest {
     public FacadesTest() {
     }
 
+    @Disabled
     @BeforeAll
     public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
@@ -69,8 +71,10 @@ public class FacadesTest {
     public void setUp() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         EntityManager em = emf.createEntityManager();
-        userRole=em.find(Role.class, "user");
-        adminRole=em.find(Role.class, "admin");
+//        userRole=em.find(Role.class, "user");
+//        adminRole=em.find(Role.class, "admin");
+     //   em.persist(userRole);
+       // em.persist(adminRole);
         user.addRole(userRole);
         admin.addRole(adminRole);
         user_admin.addRole(userRole);
