@@ -5,6 +5,7 @@
  */
 package rest;
 
+import com.google.gson.JsonObject;
 import entities.Role;
 import entities.User;
 import io.restassured.RestAssured;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utils.EMF_Creator;
 
@@ -77,7 +79,7 @@ public class ResourcesTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("User.deleteAllRows").executeUpdate();
-            em.createQuery("Delete from Role",Role.class).executeUpdate();
+            em.createQuery("Delete from Role", Role.class).executeUpdate();
             Role userRole = new Role("user");
             Role adminRole = new Role("admin");
             user.addRole(userRole);
@@ -119,6 +121,37 @@ public class ResourcesTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("count", equalTo(3));
+    }
+
+    //@Disabled
+    @Test
+    void testAddNewPerson() {
+  JsonObject data = new JsonObject();
+            data.addProperty("username", "Magda");
+            data.addProperty("password", "Magda");
+        given()
+                .contentType("application/json")
+                .body(data)
+                .when()
+                .post("/user/add")
+                .then()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("username", equalTo("Magda"));
+    }
+    
+    @Test
+    void testAddNewPersonMalformed() {
+  JsonObject data = new JsonObject();
+            data.addProperty("usernamme", "Magda");
+            data.addProperty("password", "Magda");
+        given()
+                .contentType("application/json")
+                .body(data)
+                .when()
+                .post("/user/add")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST_400.getStatusCode())
+                .body("message", equalTo("Malformed JSON Suplied"));
     }
 
 }

@@ -16,7 +16,7 @@
             <div class="row" style="padding: 50px">
                 <div class="col-md-1"> </div>
                 <div class="col-md-10">
-                    <h1>Documentation </h1>
+                    <h1>API Documentation </h1>
                     <h4>Author: Magdalena Wawrzak</h4>
                     <h4>e-mail: cph-mw216@cphbusiness.dk</h4>
                     <div class="table-responsive" style="margin: 35px">
@@ -61,13 +61,28 @@
                                     </td>     
                                 </tr>
                                 <tr>
+                                    <td style="font-weight: bold; color: darkcyan">POST</td>     
+                                    <td>user/add</td>     
+                                    <td>{username : String,<br>old_password : Stritng}</td>     
+                                    <td>{
+                                        "username": String,<br/>
+                                        "isUser": boolean,<br/>
+                                        "isAdmin": boolean
+                                        }</td>  
+
+
+                                    <td style="font-weight: bold; color: darkcyan">
+                                        e2, e6, e7
+                                    </td>     
+                                </tr>
+                                <tr>
                                     <td style="font-weight: bold; color: darkcyan">GET</td>     
                                     <td>changepassword</td>     
                                     <td>{username : String,<br>old_password : Stritng,<br>new_password : Stritng}</td>     
                                     <td>{msg : String}</td>     
 
                                     <td style="font-weight: bold; color: darkcyan">
-                                         e2, e3, e4, e7
+                                        e2, e3, e4, e7
                                     </td>     
                                 </tr>
                                 <tr>
@@ -77,7 +92,7 @@
                                     <td>{msg : String}</td>     
 
                                     <td style="font-weight: bold; color: darkcyan">
-                                       e6
+                                        e6
                                     </td>     
                                 </tr>
 
