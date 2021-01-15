@@ -1,7 +1,10 @@
 package facades;
 
 import dto.demo.UserDTO;
+import entities.Role;
 import entities.User;
+import errorhandling.API_Exception;
+import errorhandling.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -52,7 +55,6 @@ public class UserFacade {
         ArrayList<UserDTO> all = new ArrayList();
         try {
             // Query query = em.createQuery("SELECT u from users u". User.class);
-            System.out.println("allUsers");
             List<User> allUsers = em.createQuery("SELECT u from User u", User.class)
                     .getResultList();
         
@@ -65,5 +67,35 @@ public class UserFacade {
         }
 
     }
+    
+    public UserDTO addNewUser(String username, String password) throws NotFoundException, API_Exception {
+        
+        if (username.length() < 4) {
+            throw new NotFoundException("username to short");
+        }
+        if (password.length() < 4) {
+            throw new NotFoundException("password to short");
+        }
+        EntityManager em = emf.createEntityManager();
+
+        User user = new User(username, password);
+        try {
+            if (em.find(User.class, username) != null) {
+                throw new API_Exception("Username not available", 409);
+            } else {
+                em.getTransaction().begin();
+                user.addRole(em.find(Role.class, "user"));
+                em.persist(user);
+                em.getTransaction().commit();
+            }
+
+        } finally {
+            em.close();
+        }
+
+        return new UserDTO(user);
+
+    }
+
 
 }

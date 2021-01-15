@@ -7,6 +7,8 @@ import entities.User;
 import errorhandling.API_Exception;
 import errorhandling.NotFoundException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.validation.constraints.AssertTrue;
@@ -19,12 +21,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
+import security.errorhandling.AuthenticationException;
 
 //Uncomment the line below, to temporarily disable this test
 //@Disabled
 public class FacadesTest {
 
-    private static EntityManagerFactory emf = EMF_Creator.createEntityManagerFactoryForTest();
+    private static EntityManagerFactory emf;
 
     private static UserFacade user_facade;
 
@@ -35,7 +39,7 @@ public class FacadesTest {
     public static void setUpClass() {
 
         emf = EMF_Creator.createEntityManagerFactoryForTest();
-user_facade=UserFacade.getUserFacade(emf);
+        user_facade = UserFacade.getUserFacade(emf);
     }
 
     @AfterAll
@@ -59,7 +63,6 @@ user_facade=UserFacade.getUserFacade(emf);
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            //Delete existing users and roles to get a "fresh" database
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
 
@@ -77,7 +80,6 @@ user_facade=UserFacade.getUserFacade(emf);
             em.persist(user);
             em.persist(admin);
             em.persist(both);
-            //System.out.println("Saved test data to database");
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -100,59 +102,68 @@ user_facade=UserFacade.getUserFacade(emf);
         }
     }
 
-    //@Disabled
     @Test
     public void allUsersTest() {
-        System.out.println("Test UserFacade.allUsers");
         ArrayList<UserDTO> users = user_facade.allUsers();
         int size = users.size();
         for (UserDTO user1 : users) {
-            System.out.println(user1.toString());
         }
         assertEquals(3, size);
     }
 
-    public static UserDTO addNewUser(String username, String password) throws NotFoundException, API_Exception {
-        if (username.length() < 4) {
-            throw new NotFoundException("username to short");
-        }
-        if (password.length() < 4) {
-            throw new NotFoundException("password to short");
-        }
-        EntityManager em = emf.createEntityManager();
-
-        User user = new User(username, password);
-        try {
-            if (em.find(User.class, username) != null) {
-                throw new API_Exception("Username not available", 409);
-            } else {
-                em.getTransaction().begin();
-                user.addRole(em.find(Role.class, "user"));
-                em.persist(user);
-                em.getTransaction().commit();
-            }
-
-        } finally {
-            em.close();
-        }
-
-        return new UserDTO(user);
-
-    }
-
     @Test
-    public void addNewUser() throws NotFoundException, API_Exception {
+    public void addNewUserTest() throws NotFoundException, API_Exception {
         System.out.println("Test addNewUser()");
-        Assertions.assertThrows(NotFoundException.class, () -> addNewUser("123", "1234"));
-        Assertions.assertThrows(NotFoundException.class, () -> addNewUser("1234", "123"));
-        UserDTO user = addNewUser("Magdalena", "Wawrzak");
-        addNewUser("Magdalensa", "Wawrzak");
-        addNewUser("Magdalenaa", "Wawrzak");
+        Assertions.assertThrows(NotFoundException.class, () -> user_facade.addNewUser("123", "1234"));
+        Assertions.assertThrows(NotFoundException.class, () -> user_facade.addNewUser("1234", "123"));
+        UserDTO user = user_facade.addNewUser("Magdalena", "Wawrzak");
         System.out.println(user.toString());
         assertTrue("Magdalena".equals(user.getUsername()));
         assertTrue(user.isIsAdmin() == false);
         assertTrue(user.isIsUser() == true);
     }
 
+    public static String changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
+        String status = "ERROR";
+        
+        try {
+            User user = user_facade.getVeryfiedUser(username, oldPass);
+            EntityManager em = emf.createEntityManager();
+            if (newPass.length() < 4) {
+                throw new NotFoundException("password to short");
+            }
+            try {
+                em.getTransaction().begin();
+                user.setUserPass(newPass);
+                em.merge(user);
+                em.getTransaction().commit();
+                status="Password changed";
+            } finally {
+                em.close();
+            }
+            
+        } catch (AuthenticationException ex) {
+            throw new AuthenticationException(ex.getMessage());
+        }
+        
+        return status;
+
+    }
+
+    @Test
+    public void changePasswordWrongPassword() {
+        Assertions.assertThrows(AuthenticationException.class, () -> changePassword("userF", "tes", "teees"));
+
+    }
+
+    @Test
+    public void changePasswordShortPassword() {
+        Assertions.assertThrows(NotFoundException.class, () -> changePassword("userF", "test", "tee"));
+    }
+    
+    @Test
+    public void changePassword() throws NotFoundException, AuthenticationException{
+        assertTrue(changePassword("userF", "test", "new test").equals("Password changed"));
+    }
 
 }
