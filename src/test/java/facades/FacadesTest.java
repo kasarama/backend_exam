@@ -7,11 +7,8 @@ import entities.User;
 import errorhandling.API_Exception;
 import errorhandling.NotFoundException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,9 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mindrot.jbcrypt.BCrypt;
 import security.errorhandling.AuthenticationException;
 
 //Uncomment the line below, to temporarily disable this test
@@ -123,47 +118,31 @@ public class FacadesTest {
         assertTrue(user.isIsUser() == true);
     }
 
-    public static String changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
-        String status = "ERROR";
-        
-        try {
-            User user = user_facade.getVeryfiedUser(username, oldPass);
-            EntityManager em = emf.createEntityManager();
-            if (newPass.length() < 4) {
-                throw new NotFoundException("password to short");
-            }
-            try {
-                em.getTransaction().begin();
-                user.setUserPass(newPass);
-                em.merge(user);
-                em.getTransaction().commit();
-                status="Password changed";
-            } finally {
-                em.close();
-            }
-            
-        } catch (AuthenticationException ex) {
-            throw new AuthenticationException(ex.getMessage());
-        }
-        
-        return status;
-
-    }
-
     @Test
     public void changePasswordWrongPassword() {
-        Assertions.assertThrows(AuthenticationException.class, () -> changePassword("userF", "tes", "teees"));
+        Assertions.assertThrows(AuthenticationException.class, () -> user_facade.changePassword("userF", "tes", "teees"));
 
     }
 
     @Test
     public void changePasswordShortPassword() {
-        Assertions.assertThrows(NotFoundException.class, () -> changePassword("userF", "test", "tee"));
+        Assertions.assertThrows(NotFoundException.class, () -> user_facade.changePassword("userF", "test", "tee"));
+    }
+
+    @Test
+    public void changePassword() throws NotFoundException, AuthenticationException {
+        assertTrue(user_facade.changePassword("userF", "test", "new test").equals("Password changed"));
+    }
+
+   
+    @Test
+    public void deleteUserThatNotExistTest() {
+        Assertions.assertThrows(API_Exception.class, () -> user_facade.deleteUser("Magdalena Wawrzak"));
     }
     
     @Test
-    public void changePassword() throws NotFoundException, AuthenticationException{
-        assertTrue(changePassword("userF", "test", "new test").equals("Password changed"));
+    public void deleteUserTest() throws API_Exception{
+        assertTrue(user_facade.deleteUser("userF").equals("User deleted"));
+        assertEquals(2, user_facade.allUsers().size());
     }
-
 }

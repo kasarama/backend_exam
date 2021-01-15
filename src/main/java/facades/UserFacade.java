@@ -96,6 +96,56 @@ public class UserFacade {
         return new UserDTO(user);
 
     }
+    
+    
+    public static String changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
+        String status = "ERROR";
+        
+        try {
+            User user = instance.getVeryfiedUser(username, oldPass);
+            EntityManager em = emf.createEntityManager();
+            if (newPass.length() < 4) {
+                throw new NotFoundException("password to short");
+            }
+            try {
+                em.getTransaction().begin();
+                user.setUserPass(newPass);
+                em.merge(user);
+                em.getTransaction().commit();
+                status="Password changed";
+            } finally {
+                em.close();
+            }
+            
+        } catch (AuthenticationException ex) {
+            throw new AuthenticationException(ex.getMessage());
+        }
+        
+        return status;
+
+    }
+    
+    public String deleteUser(String username) throws API_Exception {
+        EntityManager em = emf.createEntityManager();
+        String status = "Error";
+
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, username);
+            if (user == null) {
+                throw new API_Exception("Username not available", 409);
+            }
+            em.remove(user);
+            em.getTransaction().commit();
+            status = "User deleted";
+        } finally {
+            em.close();
+        }
+        return status;
+
+    }
+
+    
 
 
 }
