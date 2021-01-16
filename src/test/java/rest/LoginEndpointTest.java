@@ -286,8 +286,5 @@ public class LoginEndpointTest {
 
     }
 
-    private String newToken(String username, String password) {
-        login(username, password);
-        return securityToken;
-    }
+   
 }
