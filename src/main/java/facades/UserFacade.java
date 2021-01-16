@@ -99,6 +99,7 @@ public class UserFacade {
     
     
     public static String changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
+        //TODO Make it possibla to edit roles
         String status = "ERROR";
         
         try {
@@ -126,6 +127,8 @@ public class UserFacade {
     }
     
     public String deleteUser(String username) throws API_Exception {
+        //TODO prevent from deleteing logged in user
+        //TODO prevent from deleteing user with role admin
         EntityManager em = emf.createEntityManager();
         String status = "Error";
 

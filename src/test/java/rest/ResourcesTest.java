@@ -96,6 +96,24 @@ public class ResourcesTest {
             em.close();
         }
     }
+    
+    
+     private static String securityToken;
+
+    //Utility method to login and set the returned securityToken
+    private static void login(String role, String password) {
+        String json = String.format("{username: \"%s\", password: \"%s\"}", role, password);
+        securityToken = given()
+                .contentType("application/json")
+                .body(json)
+                //.when().post("/api/login")
+                .when().post("/login")
+                .then()
+                .extract().path("token");
+        //System.out.println("TOKEN ---> " + securityToken);
+    }
+    
+    
 
     @Test
     public void testServerIsUp() {
@@ -125,10 +143,10 @@ public class ResourcesTest {
 
     //@Disabled
     @Test
-    void testAddNewPerson() {
-  JsonObject data = new JsonObject();
-            data.addProperty("username", "Magda");
-            data.addProperty("password", "Magda");
+    void testAddNewUser() {
+        JsonObject data = new JsonObject();
+        data.addProperty("username", "Magda");
+        data.addProperty("password", "Magda");
         given()
                 .contentType("application/json")
                 .body(data)
@@ -138,12 +156,12 @@ public class ResourcesTest {
                 .statusCode(HttpStatus.OK_200.getStatusCode())
                 .body("username", equalTo("Magda"));
     }
-    
+
     @Test
-    void testAddNewPersonMalformed() {
-  JsonObject data = new JsonObject();
-            data.addProperty("usernamme", "Magda");
-            data.addProperty("password", "Magda");
+    void testAddNewUserMalformed() {
+        JsonObject data = new JsonObject();
+        data.addProperty("abc", "Magda");
+        data.addProperty("password", "Magda");
         given()
                 .contentType("application/json")
                 .body(data)
@@ -153,5 +171,57 @@ public class ResourcesTest {
                 .statusCode(HttpStatus.BAD_REQUEST_400.getStatusCode())
                 .body("message", equalTo("Malformed JSON Suplied"));
     }
+
+    @Test
+    void testDeleteUser() {
+        login("admin","test");
+        
+        JsonObject data = new JsonObject();
+        data.addProperty("abc", "Magda");
+        data.addProperty("password", "Magda");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .delete("/admin/deleteuser/user")
+                .then()
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("msg", equalTo("User deleted"));
+    }
+
+    
+    @Test
+    void testDeleteUserNoTotAutorized() {
+     //   login("admin","test");
+        
+        JsonObject data = new JsonObject();
+        data.addProperty("abc", "Magda");
+        data.addProperty("password", "Magda");
+        given()
+                .contentType("application/json")
+            
+                .when()
+                .delete("/admin/deleteuser/user")
+                .then()
+                .statusCode(403)
+                .body("message", equalTo("Not authenticated - do login"));
+    }
+    @Test
+    void testDeleteUserInvalidTOken() {
+        login("admin","test");
+        
+        JsonObject data = new JsonObject();
+        data.addProperty("abc", "Magda");
+        data.addProperty("password", "Magda");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken+"a")
+                .when()
+                .delete("/admin/deleteuser/user")
+                .then()
+                .statusCode(403)
+                .body("message", equalTo("Token not valid (timed out?)"));
+    }
+    //Token not valid (timed out?)
 
 }

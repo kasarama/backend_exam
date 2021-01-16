@@ -81,6 +81,8 @@ public class UserResource {
         UserDTO added = user_facade.addNewUser(username, password);
         return GSON.toJson(added);
     }
+    
+    
 
    
 }
