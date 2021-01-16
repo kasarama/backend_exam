@@ -10,6 +10,7 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dto.demo.UserDTO;
 import facades.UserFacade;
 import java.util.Date;
 import java.util.List;
@@ -25,11 +26,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import security.errorhandling.AuthenticationException;
 import errorhandling.GenericExceptionMapper;
+import errorhandling.NotFoundException;
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManagerFactory;
+import javax.ws.rs.PUT;
 import utils.EMF_Creator;
 
 @Path("login")
 public class LoginEndpoint {
+    //TODO change name of service to AuthenticationService
+    //TODO change path to authorization
+
+    public LoginEndpoint() {
+    }
 
     public static final int TOKEN_EXPIRE_TIME = 1000 * 60 * 30; //30 min
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
@@ -46,7 +55,7 @@ public class LoginEndpoint {
             username = json.get("username").getAsString();
             password = json.get("password").getAsString();
         } catch (Exception e) {
-           throw new API_Exception("Malformed JSON Suplied",400,e);
+            throw new API_Exception("Malformed JSON Suplied", 400, e);
         }
 
         try {
@@ -65,6 +74,47 @@ public class LoginEndpoint {
         }
         throw new AuthenticationException("Invalid username or password! Please try again");
     }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin"})
+    @Path("edit")
+    public Response editUser(String jsonString) throws AuthenticationException, API_Exception, NotFoundException {
+        String username;
+        String oldPass;
+        String newPass;
+        try {
+            JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+            username = json.get("username").getAsString();
+            oldPass = json.get("old_password").getAsString();
+            newPass = json.get("new_password").getAsString();
+        } catch (Exception e) {
+            throw new API_Exception("Malformed JSON Suplied", 400, e);
+        }
+        UserDTO user = USER_FACADE.changePassword(username, oldPass, newPass);
+
+        try {
+            String token = createToken(username, user.getRoles());
+
+            JsonObject responseJson = new JsonObject();
+            responseJson.addProperty("username", username);
+            responseJson.addProperty("token", token);
+            return Response.ok(new Gson().toJson(responseJson)).build();
+        } catch (JOSEException ex) {
+            ex.printStackTrace();
+            Logger.getLogger(LoginEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /*
+    String token = createToken(username, user.getRolesAsStrings());
+            JsonObject responseJson = new JsonObject();
+            responseJson.addProperty("username", username);
+            responseJson.addProperty("token", token);
+            return Response.ok(new Gson().toJson(responseJson)).build();
+     */
 
     private String createToken(String userName, List<String> roles) throws JOSEException {
 
@@ -91,4 +141,5 @@ public class LoginEndpoint {
         return signedJWT.serialize();
 
     }
+
 }

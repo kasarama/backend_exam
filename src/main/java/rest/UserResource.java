@@ -21,9 +21,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import security.LoginEndpoint;
 import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
 import utils.HttpUtils;
@@ -70,7 +73,6 @@ public class UserResource {
     public String addUser(String jsonString) throws AuthenticationException, API_Exception, NotFoundException {
         String username;
         String password;
-        System.out.println("jsonString:" +jsonString);
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
             username = json.get("username").getAsString();
@@ -83,6 +85,7 @@ public class UserResource {
     }
     
     
+   
 
    
 }

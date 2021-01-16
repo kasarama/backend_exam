@@ -57,7 +57,7 @@ public class UserFacade {
             // Query query = em.createQuery("SELECT u from users u". User.class);
             List<User> allUsers = em.createQuery("SELECT u from User u", User.class)
                     .getResultList();
-        
+
             for (User user : allUsers) {
                 all.add(new UserDTO(user));
             }
@@ -67,9 +67,9 @@ public class UserFacade {
         }
 
     }
-    
+
     public UserDTO addNewUser(String username, String password) throws NotFoundException, API_Exception {
-        
+
         if (username.length() < 4) {
             throw new NotFoundException("username to short");
         }
@@ -96,12 +96,10 @@ public class UserFacade {
         return new UserDTO(user);
 
     }
-    
-    
-    public static String changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
+
+    public static UserDTO changePassword(String username, String oldPass, String newPass) throws NotFoundException, AuthenticationException {
         //TODO Make it possibla to edit roles
-        String status = "ERROR";
-        
+        UserDTO userDTO = null;
         try {
             User user = instance.getVeryfiedUser(username, oldPass);
             EntityManager em = emf.createEntityManager();
@@ -113,19 +111,20 @@ public class UserFacade {
                 user.setUserPass(newPass);
                 em.merge(user);
                 em.getTransaction().commit();
-                status="Password changed";
+                userDTO = new UserDTO(user);
+
             } finally {
                 em.close();
             }
-            
+
         } catch (AuthenticationException ex) {
             throw new AuthenticationException(ex.getMessage());
         }
-        
-        return status;
+
+        return userDTO;
 
     }
-    
+
     public String deleteUser(String username) throws API_Exception {
         //TODO prevent from deleteing logged in user
         //TODO prevent from deleteing user with role admin
@@ -147,8 +146,5 @@ public class UserFacade {
         return status;
 
     }
-
-    
-
 
 }

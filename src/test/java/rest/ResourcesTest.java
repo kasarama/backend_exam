@@ -192,12 +192,7 @@ public class ResourcesTest {
     
     @Test
     void testDeleteUserNoTotAutorized() {
-     //   login("admin","test");
-        
-        JsonObject data = new JsonObject();
-        data.addProperty("abc", "Magda");
-        data.addProperty("password", "Magda");
-        given()
+     given()
                 .contentType("application/json")
             
                 .when()

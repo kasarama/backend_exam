@@ -63,7 +63,7 @@
                                 <tr>
                                     <td style="font-weight: bold; color: darkcyan">POST</td>     
                                     <td>user/add</td>     
-                                    <td>{username : String,<br>old_password : Stritng}</td>     
+                                    <td>{username : String,<br>password : Stritng}</td>     
                                     <td>{
                                         "username": String,<br/>
                                         "isUser": boolean,<br/>
@@ -76,10 +76,10 @@
                                     </td>     
                                 </tr>
                                 <tr>
-                                    <td style="font-weight: bold; color: darkcyan">GET</td>     
-                                    <td>changepassword</td>     
+                                    <td style="font-weight: bold; color: darkcyan">PUT</td>     
+                                    <td>login/edit</td>     
                                     <td>{username : String,<br>old_password : Stritng,<br>new_password : Stritng}</td>     
-                                    <td>{msg : String}</td>     
+                                    <td>{username : String,<br>token : JSON Web Token}</td>     
 
                                     <td style="font-weight: bold; color: darkcyan">
                                         e2, e3, e4, e7

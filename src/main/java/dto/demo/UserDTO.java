@@ -5,6 +5,8 @@ package dto.demo;
 
 import entities.Role;
 import entities.User;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -48,6 +50,13 @@ public class UserDTO {
         return "UserDTO{" + "username=" + username + ", isUser=" + isUser + ", isAdmin=" + isAdmin + '}';
     }
     
+    public List<String> getRoles(){
+        List<String> roles=new ArrayList();
+        if(isAdmin==true){roles.add("admin");}
+        if(isUser==true){roles.add("user");}
+        return roles;
+        
+    }
     
     
 }

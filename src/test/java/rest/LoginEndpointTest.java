@@ -1,5 +1,6 @@
 package rest;
 
+import com.google.gson.JsonObject;
 import entities.User;
 import entities.Role;
 
@@ -240,8 +241,53 @@ public class LoginEndpointTest {
 
     }
 
-    
-    
-    
+    @Test
+    public void testEditUserTokenNotValid() {
+        login("user", "test");
+        given()
+                .contentType("application/json")
+                .header("x-access-token", "ABC")
+                .when()
+                .put("/login/edit").then()
+                .statusCode(403)
+                .body("message", equalTo("Token not valid (timed out?)"));
 
+    }
+
+    @Test
+    public void testEditUserNoToken() {
+        login("user", "test");
+        given()
+                .contentType("application/json")
+                .when()
+                .put("/login/edit").then()
+                .statusCode(403)
+                .body("message", equalTo("Not authenticated - do login"));
+
+    }
+
+    @Test
+    public void testEditUser() {
+        login("user", "test");
+        JsonObject data = new JsonObject();
+        data.addProperty("username", "user");
+        data.addProperty("old_password", "test");
+        data.addProperty("new_password", "test3");
+        String oldToken = securityToken;
+
+        given()
+                .contentType("application/json")
+                .body(data)
+                .header("x-access-token", securityToken)
+                .when()
+                .put("/login/edit").then()
+                .statusCode(200)
+                .body("username ", equalTo("user"));
+
+    }
+
+    private String newToken(String username, String password) {
+        login(username, password);
+        return securityToken;
+    }
 }
