@@ -19,8 +19,10 @@ public class ContactDTO {
     private String phone;
     private Date created;
     private String user;
+    private int id;
 
     public ContactDTO(Contact contact) {
+        this.id=contact.getId();
         this.name = contact.getName();
         this.email = contact.getEmail();
         this.company = contact.getCompany();
