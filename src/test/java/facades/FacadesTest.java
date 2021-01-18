@@ -31,6 +31,7 @@ public class FacadesTest {
 
     private static UserFacade user_facade;
     private static ContactFacade contact_facade;
+    private static int ID;
 
     public FacadesTest() {
     }
@@ -91,13 +92,9 @@ public class FacadesTest {
             em.persist(user);
             em.persist(admin);
             em.persist(both);
-//            user.addContact(con1);
-//            user.addContact(con2);
-//            user.addContact(con3);
-            //    em.persist(ops1);
-            //      em.persist(ops2);
-            em.persist(con1);
             em.getTransaction().commit();
+            ID = con1.getId();
+
         } finally {
             em.close();
         }
@@ -192,11 +189,28 @@ public class FacadesTest {
         ContactDTO data = new ContactDTO("Contact", "", "", "", "");
         Assertions.assertThrows(AuthenticationException.class, () -> contact_facade.addContact(data, "MAgda"));
     }
-    
+
     @Test
-    public void getContactsByUser() throws AuthenticationException{
+    public void getContactsByUser() throws AuthenticationException {
         ArrayList con = contact_facade.getContactsByUser("userF");
         assertEquals(3, con.size());
     }
 
+    @Test
+    public void testEditContact() throws API_Exception {
+        ContactDTO newValues = new ContactDTO("aa", "aa", "aa", "aa", "aa");
+        newValues.setId(ID);
+        ContactDTO edited = contact_facade.editContact(newValues);
+        assertTrue(edited.getCompany().equals("aa"));
+    }
+
+    @Test
+    public void testDeleteContact () throws API_Exception, AuthenticationException{
+        System.out.println("before: "+contact_facade.getContactsByUser("userF").size() );
+        String delete=contact_facade.deleteContact(ID);
+        assertTrue(delete.equals("DELETED"));
+                System.out.println("after: "+contact_facade.getContactsByUser("userF").size() );
+
+        assertEquals(2,contact_facade.getContactsByUser("userF").size());
+    }
 }

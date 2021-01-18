@@ -101,4 +101,25 @@ public class Contact implements Serializable {
         }
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setJobtitle(String jobtitle) {
+        this.jobtitle = jobtitle;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+
 }

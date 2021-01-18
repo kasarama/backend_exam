@@ -107,6 +107,9 @@ public class User implements Serializable {
     public List<Contact> getContacts() {
         return contacts;
     }
-    
+    public void deleteContact(Contact con){
+        this.contacts.remove(con);
+        
+    }
 
 }

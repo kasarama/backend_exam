@@ -76,8 +76,38 @@ public class ContactResource {
     @RolesAllowed("user")
     @Path("userscontacts")
     public String getContactsOfUSer() throws AuthenticationException {
-        System.out.println("In getContactsOfUSer" );
         return GSON.toJson(contact_facade.getContactsByUser(securityContext.getUserPrincipal().getName()));
+
+    }
+
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("user")
+    @Path("editcontact")
+    public String editContact(String jsonString) throws AuthenticationException, API_Exception {
+        String name;
+        String email;
+        String company;
+        String jobtitle;
+        String phone;
+        int id;
+        System.out.println(jsonString);
+        try {
+            JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
+            name = json.get("name").getAsString();
+            email = json.get("email").getAsString();
+            company = json.get("company").getAsString();
+            jobtitle = json.get("jobtitle").getAsString();
+            phone = json.get("phone").getAsString();
+            id = json.get("id").getAsInt();
+            
+
+            ContactDTO data = new ContactDTO(name, email, company, jobtitle, phone);
+            data.setId(id);
+            return GSON.toJson(contact_facade.editContact(data));
+        } catch (Exception e) {
+            throw new API_Exception("Malformed JSON Suplied", 400, e);
+        }
 
     }
 
