@@ -6,6 +6,8 @@ package facades;
 import dto.ContactDTO;
 import entities.Contact;
 import entities.User;
+import java.util.ArrayList;
+import java.util.HashSet;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import security.errorhandling.AuthenticationException;
@@ -34,15 +36,15 @@ public class ContactFacade {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            User user = em.find(User.class, username); 
-             if (user == null) {
+            User user = em.find(User.class, username);
+            if (user == null) {
                 throw new AuthenticationException("Invalid user name");
             }
             Contact contact = new Contact(data);
 
             contact.setUser(user);
             em.persist(contact);
-            
+
             em.getTransaction().commit();
             return new ContactDTO(contact);
         } finally {
@@ -50,7 +52,29 @@ public class ContactFacade {
 
         }
 
-       
     }
 
+    public ArrayList<ContactDTO> getContactsByUser(String username) throws AuthenticationException {
+        EntityManager em = emf.createEntityManager();
+        ArrayList<ContactDTO> allContacts = new ArrayList();
+        try {
+            em.getTransaction().begin();
+            User user = em.find(User.class, username);
+            if (user == null) {
+                throw new AuthenticationException("Invalid user name");
+            }
+
+            for (Contact contact : user.getContacts()) {
+                allContacts.add(new ContactDTO(contact));
+
+            }
+
+            em.getTransaction().commit();
+            return allContacts;
+        } finally {
+            em.close();
+
+        }
+
+    }
 }

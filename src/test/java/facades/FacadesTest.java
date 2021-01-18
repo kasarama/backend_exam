@@ -84,12 +84,16 @@ public class FacadesTest {
             both.addRole(adminRole);
 
             Contact con1 = new Contact("contact01", user);
+            Contact con2 = new Contact("contact02", user);
+            Contact con3 = new Contact("contact03", user);
             em.persist(userRole);
             em.persist(adminRole);
             em.persist(user);
             em.persist(admin);
             em.persist(both);
             user.addContact(con1);
+            user.addContact(con2);
+            user.addContact(con3);
             //    em.persist(ops1);
             //      em.persist(ops2);
             em.persist(con1);
@@ -179,7 +183,7 @@ public class FacadesTest {
         } finally {
             em.close();
         }
-        assertEquals(2, size);
+        assertEquals(4, size);
 
     }
 
@@ -187,6 +191,12 @@ public class FacadesTest {
     public void addContactWrongUser() {
         ContactDTO data = new ContactDTO("Contact", "", "", "", "");
         Assertions.assertThrows(AuthenticationException.class, () -> contact_facade.addContact(data, "MAgda"));
+    }
+    
+    @Test
+    public void getContactsByUser() throws AuthenticationException{
+        ArrayList con = contact_facade.getContactsByUser("userF");
+        assertEquals(3, con.size());
     }
 
 }

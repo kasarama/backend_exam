@@ -40,7 +40,7 @@ public class User implements Serializable {
         @JoinColumn(name = "role_name", referencedColumnName = "role_name")})
     @ManyToMany
     private List<Role> roleList = new ArrayList<>();
-    @OneToMany(mappedBy = "user" , cascade=CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user" , cascade=CascadeType.ALL)
     private List<Contact> contacts = new ArrayList();
 
     public List<String> getRolesAsStrings() {
