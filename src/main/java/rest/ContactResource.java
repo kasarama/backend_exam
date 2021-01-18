@@ -21,6 +21,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
+import security.errorhandling.AuthenticationException;
 import utils.EMF_Creator;
 import utils.HttpUtils;
 
@@ -58,8 +59,8 @@ public class ContactResource {
             jobtitle = json.get("jobtitle").getAsString();
             phone = json.get("phone").getAsString();
 
-            ContactDTO data = new ContactDTO(name,email,company,jobtitle,phone);
-            
+            ContactDTO data = new ContactDTO(name, email, company, jobtitle, phone);
+
             ContactDTO result = contact_facade.addContact(data, thisuser);
 
             return GSON.toJson(result);
@@ -69,4 +70,15 @@ public class ContactResource {
         }
 
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed("user")
+    @Path("userscontacts")
+    public String getContactsOfUSer() throws AuthenticationException {
+        System.out.println("In getContactsOfUSer" );
+        return GSON.toJson(contact_facade.getContactsByUser(securityContext.getUserPrincipal().getName()));
+
+    }
+
 }

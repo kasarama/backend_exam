@@ -57,7 +57,7 @@ public class Contact implements Serializable {
         this.company = "company";
         this.jobtitle = "jobtitle";
         this.phone = "phone";
-        this.user = user;
+        setUser(user);
     }
 
     public int getId() {

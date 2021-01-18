@@ -6,6 +6,7 @@
 package rest;
 
 import com.google.gson.JsonObject;
+import entities.Contact;
 import entities.Role;
 import entities.User;
 import io.restassured.RestAssured;
@@ -20,7 +21,9 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -79,24 +82,49 @@ public class ResourcesTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("User.deleteAllRows").executeUpdate();
-            em.createQuery("Delete from Role", Role.class).executeUpdate();
+            em.createQuery("Delete from Role").executeUpdate();
+            em.createQuery("DELETE from Contact").executeUpdate();
+            em.createQuery("DELETE from OpStatus").executeUpdate();
             Role userRole = new Role("user");
             Role adminRole = new Role("admin");
             user.addRole(userRole);
             admin.addRole(adminRole);
             user_admin.addRole(userRole);
             user_admin.addRole(adminRole);
+            Contact con1 = new Contact("contact01", user);
+            Contact con2 = new Contact("contact02", user);
+            Contact con3 = new Contact("contact03", user);
             em.persist(userRole);
             em.persist(adminRole);
             em.persist(user);
             em.persist(admin);
             em.persist(user_admin);
+//            em.persist(con3);
+//            em.persist(con2);
+//            em.persist(con1);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
     }
 
+    @AfterEach
+    public void tearDown() {
+        emf = EMF_Creator.createEntityManagerFactoryForTest();
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE from Contact").executeUpdate();
+            //  em.createQuery("DELETE from OpStatus").executeUpdate();
+            em.createQuery("DELETE from Role").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
+            em.getTransaction().commit();
+
+        } finally {
+            em.close();
+        }
+    }
     private static String securityToken;
 
     //Utility method to login and set the returned securityToken
@@ -235,14 +263,14 @@ public class ResourcesTest {
                 .statusCode(200)
                 .body("user", equalTo("user"));
     }
-    
+
     @Test
     void testAddContactMalformed() {
 
         login("user", "test");
         JsonObject data = new JsonObject();
         data.addProperty("xxx", "Magda");
-       
+
         given()
                 .contentType("application/json")
                 .header("x-access-token", securityToken)
@@ -252,5 +280,20 @@ public class ResourcesTest {
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("Malformed JSON Suplied"));
+    }
+
+    @Test
+    void testGetContactsOfUSer() {
+        login("user", "test");
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .when()
+                .get("/contact/userscontacts")
+                .then()
+                .statusCode(200)
+                .body("name", hasItems("contact01"));
+
     }
 }

@@ -91,9 +91,9 @@ public class FacadesTest {
             em.persist(user);
             em.persist(admin);
             em.persist(both);
-            user.addContact(con1);
-            user.addContact(con2);
-            user.addContact(con3);
+//            user.addContact(con1);
+//            user.addContact(con2);
+//            user.addContact(con3);
             //    em.persist(ops1);
             //      em.persist(ops2);
             em.persist(con1);
