@@ -14,6 +14,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -100,7 +101,6 @@ public class ContactResource {
             jobtitle = json.get("jobtitle").getAsString();
             phone = json.get("phone").getAsString();
             id = json.get("id").getAsInt();
-            
 
             ContactDTO data = new ContactDTO(name, email, company, jobtitle, phone);
             data.setId(id);
@@ -110,5 +110,16 @@ public class ContactResource {
         }
 
     }
+
+    @DELETE
+    @Path("delete")
+    @RolesAllowed("user")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String  deleteContact(int id) throws API_Exception{
+        System.out.println("DELET with id: "+id);
+       String msg=contact_facade.deleteContact(id);
+        return "{\"msg\": \""+msg+"\"}";
+    }
+
 
 }
