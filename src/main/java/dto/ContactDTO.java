@@ -30,13 +30,13 @@ public class ContactDTO {
         this.user = contact.getUser().getUserName();
     }
 
-    public ContactDTO(String name, String email, String company, String jobtitle, String phone, String user) {
+    public ContactDTO(String name, String email, String company, String jobtitle, String phone) {
         this.name = name;
         this.email = email;
         this.company = company;
         this.jobtitle = jobtitle;
         this.phone = phone;
-        this.user=user;
+       
        
     }
 
@@ -63,6 +63,12 @@ public class ContactDTO {
     public Date getCreated() {
         return created;
     }
+
+    public String getUser() {
+        return user;
+    }
+    
+    
 
    
     

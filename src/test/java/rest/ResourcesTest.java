@@ -96,9 +96,8 @@ public class ResourcesTest {
             em.close();
         }
     }
-    
-    
-     private static String securityToken;
+
+    private static String securityToken;
 
     //Utility method to login and set the returned securityToken
     private static void login(String role, String password) {
@@ -112,8 +111,6 @@ public class ResourcesTest {
                 .extract().path("token");
         //System.out.println("TOKEN ---> " + securityToken);
     }
-    
-    
 
     @Test
     public void testServerIsUp() {
@@ -174,8 +171,8 @@ public class ResourcesTest {
 
     @Test
     void testDeleteUser() {
-        login("admin","test");
-        
+        login("admin", "test");
+
         JsonObject data = new JsonObject();
         data.addProperty("abc", "Magda");
         data.addProperty("password", "Magda");
@@ -189,34 +186,71 @@ public class ResourcesTest {
                 .body("msg", equalTo("User deleted"));
     }
 
-    
     @Test
     void testDeleteUserNoTotAutorized() {
-     given()
+        given()
                 .contentType("application/json")
-            
                 .when()
                 .delete("/admin/deleteuser/user")
                 .then()
                 .statusCode(403)
                 .body("message", equalTo("Not authenticated - do login"));
     }
+
     @Test
     void testDeleteUserInvalidTOken() {
-        login("admin","test");
-        
+        login("admin", "test");
+
         JsonObject data = new JsonObject();
         data.addProperty("abc", "Magda");
         data.addProperty("password", "Magda");
         given()
                 .contentType("application/json")
-                .header("x-access-token", securityToken+"a")
+                .header("x-access-token", securityToken + "a")
                 .when()
                 .delete("/admin/deleteuser/user")
                 .then()
                 .statusCode(403)
                 .body("message", equalTo("Token not valid (timed out?)"));
     }
-    //Token not valid (timed out?)
 
+    @Test
+    void testAddContact() {
+
+        login("user", "test");
+        JsonObject data = new JsonObject();
+        data.addProperty("name", "Magda");
+        data.addProperty("email", "Magda");
+        data.addProperty("company", "Magda");
+        data.addProperty("jobtitle", "Magda");
+        data.addProperty("phone", "123456");
+
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(data)
+                .when()
+                .post("/contact/addcontact")
+                .then()
+                .statusCode(200)
+                .body("user", equalTo("user"));
+    }
+    
+    @Test
+    void testAddContactMalformed() {
+
+        login("user", "test");
+        JsonObject data = new JsonObject();
+        data.addProperty("xxx", "Magda");
+       
+        given()
+                .contentType("application/json")
+                .header("x-access-token", securityToken)
+                .body(data)
+                .when()
+                .post("/contact/addcontact")
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("Malformed JSON Suplied"));
+    }
 }

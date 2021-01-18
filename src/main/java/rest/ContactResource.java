@@ -43,18 +43,30 @@ public class ContactResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     @Path("addcontact")
-    public String addContact( String jsonString) throws API_Exception {
+    public String addContact(String jsonString) throws API_Exception {
         String thisuser = securityContext.getUserPrincipal().getName();
+        String name;
+        String email;
+        String company;
+        String jobtitle;
+        String phone;
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
-                ContactDTO data = GSON.fromJson(jsonString, ContactDTO.class);
-                ContactDTO result = contact_facade.addContact(data, thisuser);
-                return GSON.toJson(result);
+            name = json.get("name").getAsString();
+            email = json.get("email").getAsString();
+            company = json.get("company").getAsString();
+            jobtitle = json.get("jobtitle").getAsString();
+            phone = json.get("phone").getAsString();
+
+            ContactDTO data = new ContactDTO(name,email,company,jobtitle,phone);
+            
+            ContactDTO result = contact_facade.addContact(data, thisuser);
+
+            return GSON.toJson(result);
 
         } catch (Exception e) {
             throw new API_Exception("Malformed JSON Suplied", 400, e);
         }
 
-        
     }
 }
