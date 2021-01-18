@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,8 +40,8 @@ public class User implements Serializable {
         @JoinColumn(name = "role_name", referencedColumnName = "role_name")})
     @ManyToMany
     private List<Role> roleList = new ArrayList<>();
-    @OneToMany(mappedBy = "user")
-    private List<Contact> contact = new ArrayList();
+    @OneToMany(mappedBy = "user" , cascade=CascadeType.REMOVE)
+    private List<Contact> contacts = new ArrayList();
 
     public List<String> getRolesAsStrings() {
         if (roleList.isEmpty()) {
@@ -95,5 +96,17 @@ public class User implements Serializable {
     public void addRole(Role userRole) {
         roleList.add(userRole);
     }
+    
+    public void addContact(Contact contact){
+        this.contacts.add(contact);
+        if(contact.getUser()==null){
+            contact.setUser(this);
+        }
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+    
 
 }

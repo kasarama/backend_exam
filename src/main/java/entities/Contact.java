@@ -47,6 +47,7 @@ public class Contact implements Serializable {
         this.jobtitle = dto.getJobtitle();
         this.phone = dto.getPhone();
         this.created = new Date();
+
     }
 
     public Contact(String name, User user) {
@@ -85,6 +86,19 @@ public class Contact implements Serializable {
 
     public Date getCreated() {
         return created;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+
+        if (!user.getContacts().contains(this)) {
+
+            user.addContact(this);
+        }
     }
 
 }

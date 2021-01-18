@@ -18,6 +18,7 @@ public class ContactDTO {
     private String jobtitle;
     private String phone;
     private Date created;
+    private String user;
 
     public ContactDTO(Contact contact) {
         this.name = contact.getName();
@@ -26,14 +27,16 @@ public class ContactDTO {
         this.jobtitle = contact.getJobtitle();
         this.phone = contact.getPhone();
         this.created = contact.getCreated();
+        this.user = contact.getUser().getUserName();
     }
 
-    public ContactDTO(String name, String email, String company, String jobtitle, String phone) {
+    public ContactDTO(String name, String email, String company, String jobtitle, String phone, String user) {
         this.name = name;
         this.email = email;
         this.company = company;
         this.jobtitle = jobtitle;
         this.phone = phone;
+        this.user=user;
        
     }
 
@@ -57,10 +60,11 @@ public class ContactDTO {
         return phone;
     }
 
-    @Override
-    public String toString() {
-        return "ContactDTO{" + "name=" + name + ", email=" + email + ", company=" + company + ", jobtitle=" + jobtitle + ", phone=" + phone + ", created=" + created + '}';
+    public Date getCreated() {
+        return created;
     }
+
+   
     
     
 

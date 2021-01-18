@@ -95,6 +95,24 @@
                                         e4, e5, e6
                                     </td>     
                                 </tr>
+                                <tr>
+                                    <td style="font-weight: bold; color: darkcyan">POST</td>     
+                                    <td>contact/addcontact</td>     
+                                    <td>{
+                                        "name": String,<br/>
+                                        "email": String,<br/>
+                                        "company": String,<br/>
+                                        "jobtitle":String,<br/>
+                                        "phone": String,<br/>} 
+                                        "created": Date ("Jan 18, 2021 11:54:40 AM"),<br/>
+                                        "user": "user"}
+                                    </td>     
+                                    <td>{msg : String}</td>     
+
+                                    <td style="font-weight: bold; color: darkcyan">
+                                        e2, e3, e4, e5
+                                    </td>     
+                                </tr>
 
                             </tbody>
                         </table>
@@ -137,7 +155,10 @@
                                 </td>     
                                 <td>{
                                     "code": 403,
-                                    "message": "Invalid user name or password"
+                                    "message": "Invalid user name or password"}<br/>
+                                    or<br/>
+                                    {"code": 403,
+                                    "message": "Invalid user name}
                                     }
                                 </td>   
                             </tr>
@@ -183,7 +204,7 @@
                                     "message":  "password to short"
                                     }
                                     <br/> or:<br/>
-                                    "code": 400, 
+                                    {"code": 400, 
                                     "message":  "username to short"
                                     }
                                 </td>   

@@ -1,5 +1,6 @@
 package facades;
 
+import dto.ContactDTO;
 import dto.UserDTO;
 import entities.Contact;
 import entities.OpStatus;
@@ -9,6 +10,7 @@ import entities.User;
 import errorhandling.API_Exception;
 import errorhandling.NotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -28,6 +30,7 @@ public class FacadesTest {
     private static EntityManagerFactory emf;
 
     private static UserFacade user_facade;
+    private static ContactFacade contact_facade;
 
     public FacadesTest() {
     }
@@ -37,6 +40,7 @@ public class FacadesTest {
 
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         user_facade = UserFacade.getUserFacade(emf);
+        contact_facade=ContactFacade.getContactFacade(emf);
     }
 
     @AfterAll
@@ -46,7 +50,7 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
-            em.createQuery("DELETE from Contac").executeUpdate();
+            em.createQuery("DELETE from Contact").executeUpdate();
             em.createQuery("DELETE from OpStatus").executeUpdate();
             em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
@@ -67,8 +71,8 @@ public class FacadesTest {
             em.createQuery("DELETE from OpStatus").executeUpdate();
             em.createQuery("delete from User").executeUpdate();
             em.createQuery("delete from Role").executeUpdate();
-            OpStatus ops1 = new OpStatus("Non Started");
-            OpStatus ops2 = new OpStatus("In Progress");
+            //OpStatus ops1 = new OpStatus("Non Started");
+           // OpStatus ops2 = new OpStatus("In Progress");
             Role userRole = new Role("user");
             Role adminRole = new Role("admin");
             User user = new User("userF", "test");
@@ -85,8 +89,9 @@ public class FacadesTest {
             em.persist(user);
             em.persist(admin);
             em.persist(both);
-            em.persist(ops1);
-            em.persist(ops2);
+            user.addContact(con1);
+        //    em.persist(ops1);
+      //      em.persist(ops2);
             em.persist(con1);
             em.getTransaction().commit();
         } finally {
@@ -101,6 +106,8 @@ public class FacadesTest {
 
         try {
             em.getTransaction().begin();
+            em.createQuery("DELETE from Contact").executeUpdate();
+          //  em.createQuery("DELETE from OpStatus").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
             em.createQuery("DELETE from User").executeUpdate();
             em.getTransaction().commit();
@@ -156,5 +163,23 @@ public class FacadesTest {
     public void deleteUserTest() throws API_Exception {
         assertTrue(user_facade.deleteUser("userF").equals("User deleted"));
         assertEquals(2, user_facade.allUsers().size());
+    }
+    
+    @Test
+    public void addContact() throws AuthenticationException{
+        ContactDTO data = new ContactDTO("Contact","","","","","userF");
+        contact_facade.addContact(data, "userF");
+        EntityManager em = emf.createEntityManager();
+        int size =0;
+
+        try {
+            // Query query = em.createQuery("SELECT u from users u". User.class);
+           User user= em.find(User.class, "userF");
+           size=user.getContacts().size();
+        } finally {
+            em.close();
+        }
+        assertEquals(2, size);
+        
     }
 }
