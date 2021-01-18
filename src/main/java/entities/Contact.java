@@ -5,12 +5,16 @@ package entities;
 
 import dto.ContactDTO;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -36,6 +40,11 @@ public class Contact implements Serializable {
     @JoinColumn(name = "user_name")
     private User user;
 
+    @OneToMany(mappedBy = "contact" , cascade=CascadeType.ALL)
+    private List<Opportunity> opportunities = new ArrayList();
+    
+    
+    
     public Contact() {
     }
 
@@ -120,6 +129,16 @@ public class Contact implements Serializable {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public List<Opportunity> getOpportunities() {
+        return opportunities;
+    }
     
+    public void addOpportunity(Opportunity opo){
+        this.opportunities.add(opo);
+        if(opo.getContact()==null){
+            opo.setContact(this);
+        }
+    }
 
 }
