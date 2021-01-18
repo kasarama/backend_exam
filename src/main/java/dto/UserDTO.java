@@ -1,7 +1,7 @@
 /*
  * Programing exam
  */
-package dto.demo;
+package dto;
 
 import entities.Role;
 import entities.User;

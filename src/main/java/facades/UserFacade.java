@@ -1,6 +1,6 @@
 package facades;
 
-import dto.demo.UserDTO;
+import dto.UserDTO;
 import entities.Role;
 import entities.User;
 import errorhandling.API_Exception;

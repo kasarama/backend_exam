@@ -1,4 +1,4 @@
-package dto.demo;
+package dto;
 
 /**
  *

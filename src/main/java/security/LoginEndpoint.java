@@ -10,7 +10,7 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import dto.demo.UserDTO;
+import dto.UserDTO;
 import facades.UserFacade;
 import java.util.Date;
 import java.util.List;
@@ -103,12 +103,12 @@ public class LoginEndpoint {
             return Response.ok(new Gson().toJson(responseJson)).build();
         } catch (JOSEException ex) {
             ex.printStackTrace();
-            Logger.getLogger(LoginEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginEndpoint.class.getName()).log(Level.SEVERE, null, ex);       // return null;
+        //TODO handle this exception!
+            return null;
         }
-        return null;
+        // return null;
     }
-
-   
 
     private String createToken(String userName, List<String> roles) throws JOSEException {
 
@@ -118,7 +118,7 @@ public class LoginEndpoint {
             res.append(",");
         }
         String rolesAsString = res.length() > 0 ? res.substring(0, res.length() - 1) : "";
-        String issuer = "semesterstartcode-dat3";
+        String issuer = "https://dosmarter.tech/prog/";
 
         JWSSigner signer = new MACSigner(SharedSecret.getSharedKey());
         Date date = new Date();
