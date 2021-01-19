@@ -27,7 +27,7 @@ public class OpStatus implements Serializable {
         this.name = name;
     }
 
-    public String getId() {
+    public String getName() {
         return name;
     }
 

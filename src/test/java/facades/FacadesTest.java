@@ -1,15 +1,20 @@
 package facades;
 
 import dto.ContactDTO;
+import dto.OpportunityDTO;
 import dto.UserDTO;
 import entities.Contact;
 import entities.OpStatus;
+import entities.Opportunity;
 import utils.EMF_Creator;
 import entities.Role;
+import entities.TaskStatus;
+import entities.TaskType;
 import entities.User;
 import errorhandling.API_Exception;
 import errorhandling.NotFoundException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -32,7 +37,8 @@ public class FacadesTest {
 
     private static UserFacade user_facade;
     private static ContactFacade contact_facade;
-    private static int ID;
+    private static int contact_ID;
+    private static int oportunity_ID;
 
     public FacadesTest() {
     }
@@ -56,6 +62,10 @@ public class FacadesTest {
             em.createQuery("DELETE from OpStatus").executeUpdate();
             em.createQuery("DELETE from User").executeUpdate();
             em.createQuery("DELETE from Role").executeUpdate();
+            em.createQuery("DELETE from Task").executeUpdate();
+            em.createQuery("DELETE from Opportunity").executeUpdate();
+            em.createQuery("DELETE from TaskStatus").executeUpdate();
+            em.createQuery("DELETE from TaskType").executeUpdate();
 
             em.getTransaction().commit();
 
@@ -71,8 +81,12 @@ public class FacadesTest {
             em.getTransaction().begin();
             em.createQuery("DELETE from Contact").executeUpdate();
             em.createQuery("DELETE from OpStatus").executeUpdate();
-            em.createQuery("delete from User").executeUpdate();
-            em.createQuery("delete from Role").executeUpdate();
+            em.createQuery("DELETE from User").executeUpdate();
+            em.createQuery("DELETE from Role").executeUpdate();
+            em.createQuery("DELETE from Task").executeUpdate();
+            em.createQuery("DELETE from Opportunity").executeUpdate();
+            em.createQuery("DELETE from TaskStatus").executeUpdate();
+            em.createQuery("DELETE from TaskType").executeUpdate();
             //OpStatus ops1 = new OpStatus("Non Started");
             // OpStatus ops2 = new OpStatus("In Progress");
             Role userRole = new Role("user");
@@ -88,13 +102,16 @@ public class FacadesTest {
             Contact con1 = new Contact("contact01", user);
             Contact con2 = new Contact("contact02", user);
             Contact con3 = new Contact("contact03", user);
+            em.persist(new OpStatus("OP_status"));
+            em.persist(new TaskStatus("T_status"));
+            em.persist(new TaskType("T_type"));
             em.persist(userRole);
             em.persist(adminRole);
             em.persist(user);
             em.persist(admin);
             em.persist(both);
             em.getTransaction().commit();
-            ID = con1.getId();
+            contact_ID = con1.getId();
 
         } finally {
             em.close();
@@ -200,7 +217,7 @@ public class FacadesTest {
     @Test
     public void testEditContact() throws API_Exception {
         ContactDTO newValues = new ContactDTO("aa", "aa", "aa", "aa", "aa");
-        newValues.setId(ID);
+        newValues.setId(contact_ID);
         ContactDTO edited = contact_facade.editContact(newValues);
         assertTrue(edited.getCompany().equals("aa"));
     }
@@ -208,10 +225,19 @@ public class FacadesTest {
     @Test
     public void testDeleteContact () throws API_Exception, AuthenticationException{
         System.out.println("before: "+contact_facade.getContactsByUser("userF").size() );
-        String delete=contact_facade.deleteContact(ID);
+        String delete=contact_facade.deleteContact(contact_ID);
         assertTrue(delete.equals("DELETED"));
                 System.out.println("after: "+contact_facade.getContactsByUser("userF").size() );
 
         assertEquals(2,contact_facade.getContactsByUser("userF").size());
+    }
+    
+    @Test
+    public void testAddOpportunity() throws API_Exception{
+        OpportunityDTO data = new OpportunityDTO("ab",3,contact_ID,"OP_status", new Date());
+     
+        OpportunityDTO result=contact_facade.addOpportunity(data);
+        assertEquals(contact_ID, result.getContatcID());
+        
     }
 }

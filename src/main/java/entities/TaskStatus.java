@@ -27,6 +27,11 @@ public class TaskStatus implements Serializable {
     public TaskStatus(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
+    
     
 
 }

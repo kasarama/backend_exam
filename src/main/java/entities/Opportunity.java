@@ -3,6 +3,7 @@
  */
 package entities;
 
+import dto.OpportunityDTO;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,6 +104,15 @@ public class Opportunity implements Serializable {
     public void setStatus(OpStatus status) {
         this.status = status;
     }
+
+    public Opportunity(OpportunityDTO dto) {
+       
+        this.name = dto.getName();
+        this.amount = dto.getAmount();
+        this.closeDate = dto.getCloseDate();
+        
+    }
+    
     
      
 
