@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -34,18 +33,17 @@ public class Opportunity implements Serializable {
     private int amount;
     @Temporal(TemporalType.DATE)
     private Date closeDate;
+
+    @ManyToOne
+    Contact contact;
+
     @ManyToOne
     OpStatus status;
-    @JoinColumn(name = "contact_opportunity")
-    Contact contact;
+    
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
-    List tasks = new ArrayList();
+    private List<Task> tasks = new ArrayList();
 
     public Opportunity() {
-    }
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
     }
 
     public int getId() {
@@ -64,10 +62,6 @@ public class Opportunity implements Serializable {
         return closeDate;
     }
 
-    public OpStatus getStatus() {
-        return status;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -80,14 +74,10 @@ public class Opportunity implements Serializable {
         this.closeDate = closeDate;
     }
 
-    public void setStatus(OpStatus status) {
-        this.status = status;
-    }
-    
     public Contact getContact() {
         return contact;
     }
-    
+
     public void setContact(Contact contact) {
         this.contact = contact;
         if (!contact.getOpportunities().contains(this)) {
@@ -95,18 +85,25 @@ public class Opportunity implements Serializable {
         }
     }
     
-    public void addTask(Task task){
+     public void addTask(Task task){
         this.tasks.add(task);
         if (task.getOpportunity()==null){
             task.setOpportunity(this);
         }
     }
 
-    public List getTasks() {
+    public OpStatus getStatus() {
+        return status;
+    }
+
+    public List<Task> getTasks() {
         return tasks;
     }
-    
 
-   
+    public void setStatus(OpStatus status) {
+        this.status = status;
+    }
+    
+     
 
 }

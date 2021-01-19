@@ -40,7 +40,7 @@ public class Contact implements Serializable {
     @JoinColumn(name = "user_name")
     private User user;
 
-    @OneToMany(mappedBy = "contact" , cascade=CascadeType.ALL)
+    @OneToMany( mappedBy="contact",cascade=CascadeType.ALL)
     private List<Opportunity> opportunities = new ArrayList();
     
     
@@ -133,7 +133,7 @@ public class Contact implements Serializable {
     public List<Opportunity> getOpportunities() {
         return opportunities;
     }
-    
+   
     public void addOpportunity(Opportunity opo){
         this.opportunities.add(opo);
         if(opo.getContact()==null){

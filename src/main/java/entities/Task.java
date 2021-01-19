@@ -29,55 +29,14 @@ public class Task implements Serializable {
     String comment;
     @Temporal(TemporalType.DATE)
     Date dueDate;
-    @JoinColumn(name = "opportunity_task")
+    @ManyToOne
     Opportunity opportunity;
     @ManyToOne
-    TaskType type;
-    @ManyToOne
     TaskStatus status;
+    @ManyToOne
+    TaskType type;
 
     public Task() {
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public TaskType getType() {
-        return type;
-    }
-
-    public void setType(TaskType type) {
-        this.type = type;
-    }
-    
-    
-    public Opportunity getOpportunity() {
-        return opportunity;
     }
 
     public void setOpportunity(Opportunity opportunity) {
@@ -87,12 +46,53 @@ public class Task implements Serializable {
         }
     }
 
-    public Task(int id, String title, String comment, Date dueDate, Opportunity opportunity) {
-        this.id = id;
-        this.title = title;
-        this.comment = comment;
-        this.dueDate = dueDate;
-        setOpportunity(opportunity);
+    public int getId() {
+        return id;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public Opportunity getOpportunity() {
+        return opportunity;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public TaskType getType() {
+        return type;
+    }
+
+    public void setType(TaskType type) {
+        this.type = type;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+    
 
 }
