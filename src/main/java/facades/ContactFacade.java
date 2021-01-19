@@ -123,7 +123,4 @@ public class ContactFacade {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
 }
